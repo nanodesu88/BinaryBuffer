@@ -108,12 +108,19 @@ module rec Binary =
   let readInt32  (buf: Buf) = readByteList 4 buf |> map toInt32
   let readInt64  (buf: Buf) = readByteList 8 buf |> map toInt64
   
-  let readUInt16BE (buf: Buf) = readByteList 2 buf |> map (toBE >> toUInt16) 
-  let readUInt32BE (buf: Buf) = readByteList 4 buf |> map (toBE >> toUInt32) 
-  let readUInt64BE (buf: Buf) = readByteList 8 buf |> map (toBE >> toUInt64) 
-  let readInt16BE  (buf: Buf) = readByteList 2 buf |> map (toBE >> toInt16) 
-  let readInt32BE  (buf: Buf) = readByteList 4 buf |> map (toBE >> toInt32) 
-  let readInt64BE  (buf: Buf) = readByteList 8 buf |> map (toBE >> toInt64) 
+  let readUInt16BE (buf: Buf) = readByteList 2 buf |> map (toBE >> toUInt16)
+  let readUInt32BE (buf: Buf) = readByteList 4 buf |> map (toBE >> toUInt32)
+  let readUInt64BE (buf: Buf) = readByteList 8 buf |> map (toBE >> toUInt64)
+  let readInt16BE  (buf: Buf) = readByteList 2 buf |> map (toBE >> toInt16)
+  let readInt32BE  (buf: Buf) = readByteList 4 buf |> map (toBE >> toInt32)
+  let readInt64BE  (buf: Buf) = readByteList 8 buf |> map (toBE >> toInt64)
+  
+  let readUInt16LE (buf: Buf) = readByteList 2 buf |> map (toLE >> toUInt16)
+  let readUInt32LE (buf: Buf) = readByteList 4 buf |> map (toLE >> toUInt32)
+  let readUInt64LE (buf: Buf) = readByteList 8 buf |> map (toLE >> toUInt64)
+  let readInt16LE  (buf: Buf) = readByteList 2 buf |> map (toLE >> toInt16)
+  let readInt32LE  (buf: Buf) = readByteList 4 buf |> map (toLE >> toInt32)
+  let readInt64LE  (buf: Buf) = readByteList 8 buf |> map (toLE >> toInt64)
   
   let readUInt8List count (buf: Buf) = readByteList count buf
   
