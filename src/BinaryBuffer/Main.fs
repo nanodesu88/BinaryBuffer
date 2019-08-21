@@ -89,7 +89,7 @@ module rec Binary =
   let writeInt64LE (value: int64) buffer = value |> getBytesFromInt64 |> toLE |> writeSegment <| buffer
   
   let writeBoolean (value: bool) buffer = buffer |> writeUInt8 (if value then 1uy else 0uy)
-  
+
   let writeSingle = Binary.writeInt16
   let writeDouble (value: double) buffer = value |> getBytesFromDouble |> writeSegment <| buffer
   let writeChars (value: string) (encoding: Encoding) (buffer: Buf) =
@@ -100,7 +100,7 @@ module rec Binary =
   let writeCString (value: string) (encoding: Encoding) (buffer: Buf) =
     buffer |> writeByteSeq (value |> Encoding.getBytes encoding) |> writeUInt8 0uy
   
-  let readByte (buf: Buf) = buf.buffer |> List.head, { buf with buffer = buf.buffer |> List.tail }
+  let readByte (buf: Buf) = buf |> toList |> List.head, buf |> toList |> List.tail |> ofList
   let readChar (buf: Buf) = buf |> readByte |> map char
   
   let readByteList count buf = buf.buffer |> List.take count, buf |> skip count
@@ -138,8 +138,8 @@ module rec Binary =
   let readString (encoding: Encoding) (buf: Buf) =
     buf
     |> readInt32
-    |> fun (length, buf) -> readUInt8List length buf
-    |> map (fun bytes -> bytes |> Array.ofList |> Encoding.getString encoding)
+    ||> readUInt8List
+    |> map (Array.ofList >> Encoding.getString encoding)
   
   let readCString (encoding: Encoding) (buf: Buf) =
     Seq.findIndex ((=) 0uy) buf.buffer
