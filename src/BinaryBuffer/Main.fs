@@ -33,7 +33,6 @@ module rec Binary =
   let toSeq buf = buf |> getBuffer |> Seq.ofList
   let toList buf = buf |> getBuffer
   
-  let next fn res = fst res |> fn, snd res
   let map fn (v, buf) = (fn v), buf
   
   let skip count (buf: Buf): Buf = { buf with buffer = buf.buffer |> Seq.skip count |> List.ofSeq }
@@ -83,31 +82,31 @@ module rec Binary =
   let writeInt64BE (value: int64) buffer = value |> getBytesFromInt64 |> toBE |> writeSegment <| buffer
   
   let writeBoolean (value: bool) buffer = buffer |> writeUInt8 (if value then 1uy else 0uy)
-    
+  
   let writeSingle (value: single) buffer = value |> getBytesFromSingle |> writeSegment <| buffer
   let writeDouble (value: double) buffer = value |> getBytesFromDouble |> writeSegment <| buffer
   let writeChars (value: string) (encoding: Encoding) (buffer: Buf) =
     buffer |> writeUInt8List (encoding.GetBytes value |> List.ofArray)
-    
+  
   let writeString (value: string) (encoding: Encoding) (buffer: Buf) =
     buffer |> writeInt32 (value |> String.length) |> writeByteSeq (value |> Encoding.getBytes encoding)
   let writeCString (value: string) (encoding: Encoding) (buffer: Buf) =
     buffer |> writeByteSeq (value |> Encoding.getBytes encoding) |> writeUInt8 0uy
   
   let readByte (buf: Buf) = buf.buffer |> List.head, { buf with buffer = buf.buffer |> List.tail }
-  let readChar (buf: Buf) = buf |> readByte |> next char
+  let readChar (buf: Buf) = buf |> readByte |> map char
   
   let readByteList count buf = buf.buffer |> List.take count, buf |> skip count
   let readBuffer count buf = buf |> take count, buf |> skip count
   
-  let readUInt8  (buf: Buf) = readByte buf |> next uint8
-  let readUInt16 (buf: Buf) = readByteList 2 buf |> fun (bytes, buf) -> (bytes, buf) |> next toUInt16
-  let readUInt32 (buf: Buf) = readByteList 4 buf |> fun (bytes, buf) -> (bytes, buf) |> next toUInt32
-  let readUInt64 (buf: Buf) = readByteList 8 buf |> fun (bytes, buf) -> (bytes, buf) |> next toUInt64
-  let readInt8   (buf: Buf) = readByte buf |> next int8
-  let readInt16  (buf: Buf) = readByteList 2 buf |> fun (bytes, buf) -> (bytes, buf) |> next toInt16
-  let readInt32  (buf: Buf) = readByteList 4 buf |> fun (bytes, buf) -> (bytes, buf) |> next toInt32
-  let readInt64  (buf: Buf) = readByteList 8 buf |> fun (bytes, buf) -> (bytes, buf) |> next toInt64
+  let readUInt8  (buf: Buf) = readByte buf |> map uint8
+  let readUInt16 (buf: Buf) = readByteList 2 buf |> map toUInt16
+  let readUInt32 (buf: Buf) = readByteList 4 buf |> map toUInt32
+  let readUInt64 (buf: Buf) = readByteList 8 buf |> map toUInt64
+  let readInt8   (buf: Buf) = readByte buf |> map int8
+  let readInt16  (buf: Buf) = readByteList 2 buf |> map toInt16
+  let readInt32  (buf: Buf) = readByteList 4 buf |> map toInt32
+  let readInt64  (buf: Buf) = readByteList 8 buf |> map toInt64
   
   let readUInt16BE (buf: Buf) = readByteList 2 buf |> map (toBE >> toUInt16) 
   let readUInt32BE (buf: Buf) = readByteList 4 buf |> map (toBE >> toUInt32) 
@@ -118,15 +117,15 @@ module rec Binary =
   
   let readUInt8List count (buf: Buf) = readByteList count buf
   
-  let readSingle (buf: Buf) = readUInt8List 4 buf |> fun (bytes, buf) -> (bytes, buf) |> next toSingle
-  let readDouble (buf: Buf) = readUInt8List 8 buf |> fun (bytes, buf) -> (bytes, buf) |> next toDouble
-  let readBoolean (buf: Buf) = readUInt8 buf |> next (fun byte -> byte = 0uy |> not)
+  let readSingle (buf: Buf) = readUInt8List 4 buf |> map toSingle
+  let readDouble (buf: Buf) = readUInt8List 8 buf |> map toDouble
+  let readBoolean (buf: Buf) = readUInt8 buf |> map ((=) 0uy >> not)
   
   let readString (encoding: Encoding) (buf: Buf) =
     buf
     |> readInt32
     |> fun (length, buf) -> readUInt8List length buf
-    |> next (fun bytes -> bytes |> Array.ofList |> Encoding.getString encoding)
+    |> map (fun bytes -> bytes |> Array.ofList |> Encoding.getString encoding)
       
   let readCString (encoding: Encoding) (buf: Buf) =
     Seq.findIndex ((=) 0uy) buf.buffer
