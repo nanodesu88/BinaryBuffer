@@ -90,10 +90,10 @@ module rec Binary =
   
   let writeBoolean (value: bool) buffer = buffer |> writeUInt8 (if value then 1uy else 0uy)
   
-  let writeSingle (value: single) buffer = value |> getBytesFromSingle |> writeSegment <| buffer
+  let writeSingle = Binary.writeInt16
   let writeDouble (value: double) buffer = value |> getBytesFromDouble |> writeSegment <| buffer
   let writeChars (value: string) (encoding: Encoding) (buffer: Buf) =
-    buffer |> writeUInt8List (encoding.GetBytes value |> List.ofArray)
+    encoding.GetBytes value |> List.ofArray |> writeUInt8List <| buffer
   
   let writeString (value: string) (encoding: Encoding) (buffer: Buf) =
     buffer |> writeInt32 (value |> String.length) |> writeByteSeq (value |> Encoding.getBytes encoding)
