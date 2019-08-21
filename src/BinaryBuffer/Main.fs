@@ -19,13 +19,13 @@ module rec Binary =
   let getBuffer buf = buf.buffer
   
   type internal Result<'T> = 'T * Buf
-
+  
   let isLittleEndian = BitConverter.IsLittleEndian
   let toBE bytes = if isLittleEndian then bytes |> List.rev else bytes
   let toLE bytes = if isLittleEndian then bytes else bytes |> List.rev
-
+  
   let create = { buffer = [] }
-
+  
   let ofList lst = { buffer = lst }
   let ofArray arr = arr |> List.ofArray |> ofList
   
@@ -126,13 +126,13 @@ module rec Binary =
     |> readInt32
     |> fun (length, buf) -> readUInt8List length buf
     |> map (fun bytes -> bytes |> Array.ofList |> Encoding.getString encoding)
-      
+  
   let readCString (encoding: Encoding) (buf: Buf) =
     Seq.findIndex ((=) 0uy) buf.buffer
     |> fun idx -> buf |> take idx |> toArray |> Encoding.getString encoding, buf |> skip (1 + idx)
-    
+  
   let stringifyList (buffer: uint8 list) =
     buffer |> Seq.map(fun b -> b.ToString "x2") |> Text.join " "
-    
+  
   let stringify (buffer: Buf) = buffer |> getBuffer |> stringifyList
   
