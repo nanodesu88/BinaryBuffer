@@ -28,10 +28,11 @@ module rec Binary =
   
   let ofList lst = { buffer = lst }
   let ofArray arr = arr |> List.ofArray |> ofList
+  let ofSeq s = s |> List.ofSeq |> ofList
   
-  let toArray buf = Array.ofList (buf |> getBuffer)
-  let toSeq buf = buf |> getBuffer |> Seq.ofList
   let toList buf = buf |> getBuffer
+  let toArray buf = buf |> getBuffer |> Array.ofList
+  let toSeq buf = buf |> getBuffer |> Seq.ofList
   
   let map fn (v, buf) = (fn v), buf
   
