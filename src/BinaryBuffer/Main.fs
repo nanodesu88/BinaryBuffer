@@ -81,6 +81,13 @@ module rec Binary =
   let writeInt32BE (value: int32) buffer = value |> getBytesFromInt32 |> toBE |> writeSegment <| buffer
   let writeInt64BE (value: int64) buffer = value |> getBytesFromInt64 |> toBE |> writeSegment <| buffer
   
+  let writeUInt16LE (value: uint16) buffer = value |> getBytesFromUInt16 |> toLE |> writeSegment <| buffer 
+  let writeUInt32LE (value: uint32) buffer = value |> getBytesFromUInt32 |> toLE |> writeSegment <| buffer
+  let writeUInt64LE (value: uint64) buffer = value |> getBytesFromUInt64 |> toLE |> writeSegment <| buffer
+  let writeInt16LE (value: int16) buffer = value |> getBytesFromInt16 |> toLE |> writeSegment <| buffer
+  let writeInt32LE (value: int32) buffer = value |> getBytesFromInt32 |> toLE |> writeSegment <| buffer
+  let writeInt64LE (value: int64) buffer = value |> getBytesFromInt64 |> toLE |> writeSegment <| buffer
+  
   let writeBoolean (value: bool) buffer = buffer |> writeUInt8 (if value then 1uy else 0uy)
   
   let writeSingle (value: single) buffer = value |> getBytesFromSingle |> writeSegment <| buffer
@@ -122,7 +129,7 @@ module rec Binary =
   let readInt32LE  (buf: Buf) = readByteList 4 buf |> map (toLE >> toInt32)
   let readInt64LE  (buf: Buf) = readByteList 8 buf |> map (toLE >> toInt64)
   
-  let readUInt8List count (buf: Buf) = readByteList count buf
+  let readUInt8List = readByteList
   
   let readSingle (buf: Buf) = readUInt8List 4 buf |> map toSingle
   let readDouble (buf: Buf) = readUInt8List 8 buf |> map toDouble
