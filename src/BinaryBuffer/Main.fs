@@ -26,8 +26,8 @@ module rec Binary =
 
   let create = { buffer = [] }
 
-  let fromList lst = { buffer = lst }
-  let fromArray arr = arr |> List.ofArray |> fromList
+  let ofList lst = { buffer = lst }
+  let ofArray arr = arr |> List.ofArray |> ofList
   
   let toArray buf = Array.ofList (buf |> getBuffer)
   let toSeq buf = buf |> getBuffer |> Seq.ofList
@@ -35,8 +35,8 @@ module rec Binary =
   
   let map fn (v, buf) = (fn v), buf
   
-  let skip count (buf: Buf): Buf = { buf with buffer = buf.buffer |> Seq.skip count |> List.ofSeq }
-  let take count (buf: Buf): Buf = { buf with buffer = buf.buffer |> Seq.take count |> List.ofSeq }
+  let skip count buffer = buffer |> toList |> List.skip count |> ofList
+  let take count buffer = buffer |> toList |> List.take count |> ofList
   
   let replace ``begin`` length (chunk: Buf) (destination: Buf) =
     let buf1 = destination |> take ``begin``
