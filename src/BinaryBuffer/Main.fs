@@ -57,11 +57,12 @@ module rec Binary =
   let writeChar (value: char) = writeByte (uint8 value)
 
   let writeByteList (value: uint8 list) (buffer: Buf) = { buffer with buffer = buffer.buffer @ value }
+  let writeByteArray (value: uint8 array) = value |> List.ofArray |> writeByteList
   let writeByteSeq seq buffer = seq |> List.ofSeq |> writeByteList <| buffer
   
   let writeUInt8 = writeByte
   let writeUInt8List = writeByteList
-  let writeUInt8Array = List.ofArray >> writeUInt8List
+  let writeUInt8Array = writeByteArray
   
   let internal writeSegment value buffer =
     value |> writeUInt8List <| buffer
