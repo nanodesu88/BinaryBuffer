@@ -51,7 +51,7 @@ module rec Binary =
     { buf with buffer = buf2.buffer @ buf.buffer }
   
   let appendSegmentsTo (buf: Buf) (segments: Buf seq) =
-    Seq.append (seq [ buf ]) segments |> Seq.fold (fun st1 st2 -> append st1 st2) create 
+    Seq.append [ buf ] segments |> Seq.fold append create 
   
   let writeByte (value: uint8) (buffer: Buf) = { buffer with buffer = buffer.buffer @ [ value ] }
   let writeChar (value: char) = writeByte (uint8 value)
@@ -104,7 +104,7 @@ module rec Binary =
   let readByte (buf: Buf) = buf |> toList |> List.head, buf |> toList |> List.tail |> ofList
   let readChar (buf: Buf) = buf |> readByte |> map char
   
-  let readByteList count buf = buf.buffer |> List.take count, buf |> skip count
+  let readByteList count buf = buf |> toList |> List.take count, buf |> skip count
   let readBuffer count buf = buf |> take count, buf |> skip count
   
   let readUInt8  (buf: Buf) = readByte buf |> map uint8
