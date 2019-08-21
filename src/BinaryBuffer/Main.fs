@@ -19,11 +19,11 @@ module rec Binary =
   let getBuffer buf = buf.buffer
   
   type internal Result<'T> = 'T * Buf
-  
+
   let isLittleEndian = BitConverter.IsLittleEndian
   let toBE bytes = if isLittleEndian then bytes |> List.rev else bytes
   let toLE bytes = if isLittleEndian then bytes else bytes |> List.rev
-  
+
   let create = { buffer = [] }
 
   let fromList lst = { buffer = lst }
@@ -49,7 +49,7 @@ module rec Binary =
     { buf with buffer = buf.buffer @ buf2.buffer }
     
   let prepend (buf: Buf) (buf2: Buf) =
-    { buf with buffer = buf2.buffer @ buf2.buffer }
+    { buf with buffer = buf2.buffer @ buf.buffer }
   
   let appendSegmentsTo (buf: Buf) (segments: Buf seq) =
     Seq.append (seq [ buf ]) segments |> Seq.fold (fun st1 st2 -> append st1 st2) create 
