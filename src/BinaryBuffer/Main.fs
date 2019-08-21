@@ -1,7 +1,6 @@
 ﻿namespace BinaryBuffer
 
 open System
-open Microsoft.FSharpLu
 
 [<RequireQualifiedAccess>]
 module rec Binary = 
@@ -91,7 +90,7 @@ module rec Binary =
   let writeInt64LE (value: int64) buffer = value |> getBytesFromInt64 |> toLE |> writeSegment <| buffer
   
   let writeBoolean (value: bool) buffer = buffer |> writeUInt8 (if value then 1uy else 0uy)
-
+  
   let writeSingle = Binary.writeInt16
   let writeDouble (value: double) buffer = value |> getBytesFromDouble |> writeSegment <| buffer
   let writeChars (value: string) (encoding: Encoding) (buffer: Buf) =
@@ -148,7 +147,7 @@ module rec Binary =
     |> fun idx -> buf |> take idx |> toArray |> Encoding.getString encoding, buf |> skip (1 + idx)
   
   let stringifyList (buffer: uint8 list) =
-    buffer |> Seq.map(fun b -> b.ToString "x2") |> Text.join " "
+    buffer |> Seq.map(fun b -> b.ToString "x2") |> String.concat " "
   
   let stringify (buffer: Buf) = buffer |> getBuffer |> stringifyList
   
