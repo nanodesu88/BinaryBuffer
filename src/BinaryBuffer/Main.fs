@@ -54,8 +54,8 @@ module rec Binary =
     Seq.append (seq [ buf ]) segments |> Seq.fold (fun st1 st2 -> append st1 st2) create 
   
   let writeByte (value: uint8) (buffer: Buf) = { buffer with buffer = buffer.buffer @ [ value ] }
-  let writeChar (value: char) (buffer: Buf) = writeByte (uint8 value) buffer
-  
+  let writeChar (value: char) = writeByte (uint8 value)
+
   let writeByteList (value: uint8 list) (buffer: Buf) = { buffer with buffer = buffer.buffer @ value }
   let writeByteSeq seq buffer = seq |> List.ofSeq |> writeByteList <| buffer
   
