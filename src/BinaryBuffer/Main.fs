@@ -99,9 +99,11 @@ module rec Binary =
   let writeString (value: string) (encoding: Encoding) (buffer: Buf) =
     buffer |> writeInt32 (value |> String.length) |> writeByteSeq (value |> Encoding.getBytes encoding)
   let writeCString (value: string) (encoding: Encoding) (buffer: Buf) =
-    buffer |> writeByteSeq (value |> Encoding.getBytes encoding) |> writeUInt8 0uy
+    buffer |> writeByteSeq (value |> Encoding.getBytes encoding) |> writeZeroByte
+  let writeZeroByte (buffer: Buf) =
+    writeByte 0uy buffer
   
-  let readByte (buf: Buf) = buf |> toList |> List.head, buf |> toList |> List.tail |> ofList
+  let readByte (buf: Buf) = buf |> toList |> List.head |> byte, buf |> toList |> List.tail |> ofList
   let readChar (buf: Buf) = buf |> readByte |> map char
   
   let readByteList count buf = buf |> toList |> List.take count, buf |> skip count
